@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { RedisDbModule } from 'src/common/redis.module';
+
 import { generateCaptchaController } from './generateCapcha.controller';
 import { generateCaptchaService } from './generateCapcha.service';
+import { RedisDbModule } from 'src/common/redis/redis.module';
 
 
 @Module({

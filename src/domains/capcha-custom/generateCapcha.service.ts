@@ -5,7 +5,12 @@ import * as randomstring from 'randomstring';
 import * as dotenv from 'dotenv';
 dotenv.config();
 import * as uuid from 'uuid';
-import { RedisDbService } from 'src/common/redis.service';
+import { RedisDbService } from 'src/common/redis/redis.service';
+import { Request_Was_Successful, Request_Was_Successful1 } from 'src/common/translates/success.translate';
+import {
+  Bad_Request_Exception,
+  expireTime,
+} from 'src/common/translates/errors.translate';
 
 let hashCap: string;
 
@@ -41,12 +46,8 @@ export class generateCaptchaService {
       ctx.fillText(captchaText, 17, 70);
       console.log('captcha', captchaText);
 
-       canvas.toBuffer('image/png');
-
-      return {
-        hashCap,
-        captchaText,
-      };
+      canvas.toBuffer('image/png');
+      return { hashCap, captchaText };
     } catch (error) {
       console.log(error);
     }
@@ -57,20 +58,17 @@ export class generateCaptchaService {
     const redisCap = await this.redisService.get(hashCap);
     this.redisService.deleteKey(hashCap);
     if (redisCap === null) {
-      return new HttpException(
-        'Captcha has expired',
-        HttpStatus.REQUEST_TIMEOUT,
-      );
+      throw new HttpException(expireTime, expireTime.status_code);
     } else if (captchaText !== redisCap) {
-      return new HttpException(
-        'The captcha is incorrect',
-        HttpStatus.BAD_REQUEST,
+      throw new HttpException(
+        Bad_Request_Exception,
+        Bad_Request_Exception.status_code,
       );
     } else {
-      return new HttpException({
-        message: 'Your captcha is correct', 
-        success: true
-      }, HttpStatus.OK);
+      throw new HttpException(
+        Request_Was_Successful1,
+        Request_Was_Successful1.status_code,
+      );
     }
   }
 }
