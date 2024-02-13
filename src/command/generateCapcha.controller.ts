@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import {generateCaptchaService } from './generateCapcha.service'
+import { CapchaDto, capchaResponseDto } from './dto/capchaDto';
 
 @Controller('generateCaptcha')
 export class generateCaptchaController {
@@ -11,5 +12,11 @@ export class generateCaptchaController {
   @Get('get')
   generateCaptcha() {
     return this.generateCaptchaService.generate();
+  }
+
+  @Post('checkCapcha')
+   async checkCapcha(@Body() capchaDto: CapchaDto ): Promise<capchaResponseDto>{
+  const result =  await this.generateCaptchaService.validateCapcha(capchaDto);
+  return result as capchaResponseDto;
   }
 }
