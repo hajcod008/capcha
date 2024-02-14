@@ -15,7 +15,5 @@ import { checkToken } from './common/middleware/check-token.middlware';
 export class AppModule implements NestModule{
  // constructor(private connection: Connection){}
   configure(consumer: MiddlewareConsumer, ) {
-    consumer
-      .apply(checkToken)
-      .forRoutes({ path: '*', method: RequestMethod.ALL });}
+    consumer.apply(checkToken).forRoutes('/generateCaptcha/get');}
 }

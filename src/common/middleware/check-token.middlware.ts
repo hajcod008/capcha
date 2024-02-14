@@ -5,7 +5,12 @@ import {
   NestMiddleware,
 } from '@nestjs/common';
 import axios from 'axios';
-import { Invalid_Token } from '../translates/errors.translate';
+import {
+  Invalid_Token,
+  Unauthorized,
+  expireTime,
+} from '../translates/errors.translate';
+import { error } from 'console';
 @Injectable()
 export class checkToken implements NestMiddleware {
   async use(req: Request, res: Response, next: Function) {
@@ -28,15 +33,10 @@ export class checkToken implements NestMiddleware {
         console.log(response.data);
         next();
       } else {
-        throw new HttpException(Invalid_Token, Invalid_Token.status_code);
+        throw new HttpException(Unauthorized, Unauthorized.status_code);
       }
     } catch (error) {
-      if (axios.isAxiosError(error) && error.code === 'ETIMEDOUT') {
-        throw new HttpException('Request timeout', HttpStatus.REQUEST_TIMEOUT);
-      } else {
-        console.error('Error in CheckToken middleware:', error);
-        throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
-      }
+      throw new HttpException(error, error.status);
     }
   }
 }

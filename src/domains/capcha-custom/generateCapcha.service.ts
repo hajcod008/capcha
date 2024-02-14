@@ -6,7 +6,10 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 import * as uuid from 'uuid';
 import { RedisDbService } from 'src/common/redis/redis.service';
-import { Request_Was_Successful, Request_Was_Successful1 } from 'src/common/translates/success.translate';
+import {
+  Request_Was_Successful,
+  Request_Was_Successful1,
+} from 'src/common/translates/success.translate';
 import {
   Bad_Request_Exception,
   expireTime,
@@ -47,9 +50,26 @@ export class generateCaptchaService {
       console.log('captcha', captchaText);
 
       canvas.toBuffer('image/png');
-      return { hashCap, captchaText };
+
+      const additional_info = {
+        hashCap,
+        captchaText,
+      };
+      const result = Request_Was_Successful(additional_info);
+
+      throw new HttpException(result, result.status_code);
     } catch (error) {
-      console.log(error);
+      throw new HttpException(
+        {
+          ...error.response,
+          additional_info: {
+            ...error.response.message,
+            hashCap: error.response.hashCap,
+            captchaText: error.response.captchaText,
+          },
+        },
+        error.status,
+      );
     }
   }
 
