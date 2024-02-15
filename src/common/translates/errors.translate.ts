@@ -15,7 +15,7 @@ export const expireTime = {
   },
 };
 export const Invalid_Token = {
-  status_code: 401,
+  status_code: 402,
   code: 1014,
   message: {
     fa: 'توکن نامعتبر است',
@@ -28,5 +28,31 @@ export const Unauthorized = {
   message: {
     fa: 'هویت تایید نشد',
     en: 'Unauthorized',
+  },
+};
+export function PageNotFound(messege: string) {
+  return {
+    status_code: 404,
+    code: 1003,
+    message: {
+      fa: 'صفحه پیدا نشد ',
+      en: messege,
+    },
+  };
+}
+export const Something_Went_Wrong = {
+  status_code: 500,
+  code: 1009,
+  message: {
+    fa: "خطای سمت سرور",
+    en: "Internal server Error",
+  },
+};
+export const Loggin_Failed= {
+  status_code: 500,
+  code: 1007,
+  message: {
+    fa: "ورود به سیستم ناموفق بود است، لطفاً بعدا دوباره امتحان کنید.",
+    en: "Logging in failed, please try again later.",
   },
 };

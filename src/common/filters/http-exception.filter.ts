@@ -7,6 +7,7 @@ import {
 import {
   Bad_Request_Exception,
   Invalid_Token,
+  Something_Went_Wrong,
   Unauthorized,
   expireTime,
 } from '../translates/errors.translate';
@@ -64,7 +65,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         message_developer: exception.getResponse().message,
       };
       message = Unauthorized.message[language];
-    } else if (exception.status === 401) {
+    } else if (exception.status === 402) {
       result = {
         status_code: Invalid_Token.status_code,
         error_code: Invalid_Token.code,
@@ -113,7 +114,17 @@ export class HttpExceptionFilter implements ExceptionFilter {
         message_developer: exception.getResponse().message,
       };
       message = Request_Was_Successful1.message[language];
-    } 
+    } else {
+      result = {
+        status_code: Something_Went_Wrong.status_code,
+        error_code: Something_Went_Wrong.code,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+        message_developer: Something_Went_Wrong.message[language],
+        //TODO : remove this line from
+      };
+      message = exception.message;
+    }
     response
       .status(result.status_code)
       .json({ success: result.success, result: result, message: message });
@@ -125,6 +136,3 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
   }
 }
-
-
-

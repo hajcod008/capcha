@@ -36,7 +36,8 @@ export class checkToken implements NestMiddleware {
         throw new HttpException(Unauthorized, Unauthorized.status_code);
       }
     } catch (error) {
-      throw new HttpException(error, error.status);
+      const status = error.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      throw new HttpException(error.message || 'Internal Server Error', status);
     }
   }
 }
