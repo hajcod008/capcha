@@ -16,7 +16,7 @@ export class generateCaptchaController {
 
   @Post('checkCapcha')
    async checkCapcha(@Body() capchaDto: CapchaDto ): Promise<capchaResponseDto>{
-  const result =  await this.generateCaptchaService.validateCapcha(capchaDto);
+  const result =  await this.generateCaptchaService.validateCaptcha(capchaDto);
   return result as capchaResponseDto;
   }
 }

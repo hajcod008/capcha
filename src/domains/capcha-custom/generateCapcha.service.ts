@@ -12,8 +12,10 @@ import {
 } from 'src/common/translates/success.translate';
 import {
   Bad_Request_Exception,
+  Unauthorized,
   expireTime,
 } from 'src/common/translates/errors.translate';
+import axios from 'axios';
 
 let hashCap: string;
 
@@ -73,8 +75,14 @@ export class generateCaptchaService {
     }
   }
 
-  async validateCapcha(capchaDto: any): Promise<any> {
-    const { hashCap, captchaText } = capchaDto;
+  async validateCaptcha(capchaDto: any): Promise<any> {
+    const { hashCap, captchaText, token } = capchaDto;
+
+    const validate = await this.checkToken(token);
+
+    if (!validate) {
+      throw new HttpException(Unauthorized, Unauthorized.status_code);
+    }
     const redisCap = await this.redisService.get(hashCap);
     this.redisService.deleteKey(hashCap);
     if (redisCap === null) {
@@ -89,6 +97,26 @@ export class generateCaptchaService {
         Request_Was_Successful1,
         Request_Was_Successful1.status_code,
       );
+    }
+  }
+
+  async checkToken(token: any) {
+    try {
+      const data = {
+        System: 'tosfood',
+        Token: token,
+      };
+      const serviceUrl = `http://${process.env.ip}:${process.env.port}/api/get_way/check_token`;
+      const response = await axios.post(serviceUrl, data);
+      if (response.data.result.success) {
+        console.log(response.data);
+        return data;
+      } else {
+        throw new HttpException(Unauthorized, Unauthorized.status_code);
+      }
+    } catch (error) {
+      const status = error.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      throw new HttpException(error.message || 'Internal Server Error', status);
     }
   }
 }

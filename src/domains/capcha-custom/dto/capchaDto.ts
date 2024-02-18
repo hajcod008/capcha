@@ -19,6 +19,11 @@ export class CapchaDto {
   @IsNotEmpty()
   @IsString()
   captchaText:string;
+
+  
+  @IsNotEmpty()
+  @IsString()
+  token:any
 }
 
 export class capchaResponseDto{ 

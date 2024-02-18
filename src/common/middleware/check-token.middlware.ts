@@ -10,12 +10,13 @@ import {
   Unauthorized,
   expireTime,
 } from '../translates/errors.translate';
-import { error } from 'console';
+
 @Injectable()
 export class checkToken implements NestMiddleware {
   async use(req: Request, res: Response, next: Function) {
     try {
       const token = req.headers['authorization'];
+
       if (!token) {
         throw new HttpException(Invalid_Token, Invalid_Token.status_code);
       }
@@ -33,6 +34,7 @@ export class checkToken implements NestMiddleware {
         console.log(response.data);
         next();
       } else {
+
         throw new HttpException(Unauthorized, Unauthorized.status_code);
       }
     } catch (error) {
