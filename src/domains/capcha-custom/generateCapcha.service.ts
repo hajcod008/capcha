@@ -12,6 +12,8 @@ import {
 } from 'src/common/translates/success.translate';
 import {
   Bad_Request_Exception,
+  InternalServerError,
+  Invalid_Captcha,
   Unauthorized,
   expireTime,
 } from 'src/common/translates/errors.translate';
@@ -39,7 +41,7 @@ export class generateCaptchaService {
       ctx.fillStyle = `rgb(255, 0, 255, 0.5)`;
       ctx.font = '50px "My Font"';
 
-      const captchaText = randomstring.generate(6);
+      const captchaText = randomstring.generate(process.env.RANDOM_NUMBER);
       hashCap = uuid.v4();
       console.log('hash', hashCap);
       this.redisService.set(
@@ -76,47 +78,35 @@ export class generateCaptchaService {
   }
 
   async validateCaptcha(capchaDto: any): Promise<any> {
-    const { hashCap, captchaText, token } = capchaDto;
-
-    const validate = await this.checkToken(token);
-
-    if (!validate) {
-      throw new HttpException(Unauthorized, Unauthorized.status_code);
-    }
-    const redisCap = await this.redisService.get(hashCap);
-    this.redisService.deleteKey(hashCap);
-    if (redisCap === null) {
-      throw new HttpException(expireTime, expireTime.status_code);
-    } else if (captchaText !== redisCap) {
-      throw new HttpException(
-        Bad_Request_Exception,
-        Bad_Request_Exception.status_code,
-      );
-    } else {
-      throw new HttpException(
-        Request_Was_Successful1,
-        Request_Was_Successful1.status_code,
-      );
-    }
-  }
-
-  async checkToken(token: any) {
     try {
-      const data = {
-        System: 'tosfood',
-        Token: token,
-      };
-      const serviceUrl = `http://${process.env.ip}:${process.env.port}/api/get_way/check_token`;
-      const response = await axios.post(serviceUrl, data);
-      if (response.data.result.success) {
-        console.log(response.data);
-        return data;
+      const { hashCap, captchaText } = capchaDto;
+
+      const redisCap = await 
+      this.redisService.get(hashCap);
+  ;
+      this.redisService.deleteKey(hashCap);
+      if (redisCap === null) {
+        throw new HttpException(expireTime, expireTime.status_code);
+      } else if (captchaText !== redisCap) {
+  
+        throw new HttpException(
+          Invalid_Captcha,
+          Invalid_Captcha.status_code,
+        );
       } else {
-        throw new HttpException(Unauthorized, Unauthorized.status_code);
-      }
+        throw new HttpException(
+          Request_Was_Successful1,
+          Request_Was_Successful1.status_code,
+        );
+      } 
     } catch (error) {
-      const status = error.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      throw new HttpException(error.message || 'Internal Server Error', status);
+      if (error.status === undefined) {
+        const formatError = InternalServerError(error.message);
+        throw new HttpException(formatError, formatError.status_code);
+      } else throw error;
     }
+
   }
+
+
 }

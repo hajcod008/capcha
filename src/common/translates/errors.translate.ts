@@ -56,3 +56,21 @@ export const Loggin_Failed= {
     en: "Logging in failed, please try again later.",
   },
 };
+export const Invalid_Captcha = {
+  status_code: 403,
+  code: 1025,
+  message: {
+    fa: " کپچا نامعتبر است",
+    en: "Captcha is invalid",
+  },
+};
+export function InternalServerError(messege: string) {
+  return {
+    status_code: 500,
+    code: 1003,
+    message: {
+      fa: 'خطای سرور',
+      en: messege,
+    },
+  };
+};

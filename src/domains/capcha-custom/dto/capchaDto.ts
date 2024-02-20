@@ -20,10 +20,7 @@ export class CapchaDto {
   @IsString()
   captchaText:string;
 
-  
-  @IsNotEmpty()
-  @IsString()
-  token:any
+
 }
 
 export class capchaResponseDto{ 

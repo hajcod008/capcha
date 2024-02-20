@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import {
   Bad_Request_Exception,
+  Invalid_Captcha,
   Invalid_Token,
   Something_Went_Wrong,
   Unauthorized,
@@ -93,7 +94,16 @@ export class HttpExceptionFilter implements ExceptionFilter {
         message_developer: exception.getResponse().message,
       };
       message = expireTime.message[language];
-    } else if (exception.status === 201) {
+    } else if (exception.status === 403) {
+      result = {
+        status_code: Invalid_Captcha.status_code,
+        error_code: Invalid_Captcha.code,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+        message_developer: exception.getResponse().message,
+      };
+      message = Invalid_Captcha.message[language];
+    }else if (exception.status === 201) {
       const format2 = Request_Was_Successful(exception.additional_info);
       result = {
         success: true,
