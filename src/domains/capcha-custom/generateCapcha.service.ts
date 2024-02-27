@@ -17,7 +17,6 @@ import {
   Unauthorized,
   expireTime,
 } from 'src/common/translates/errors.translate';
-import axios from 'axios';
 
 let hashCap: string;
 
@@ -81,32 +80,24 @@ export class generateCaptchaService {
     try {
       const { hashCap, captchaText } = capchaDto;
 
-      const redisCap = await 
-      this.redisService.get(hashCap);
-  ;
+      const redisCap = await this.redisService.get(hashCap);
+
       this.redisService.deleteKey(hashCap);
       if (redisCap === null) {
         throw new HttpException(expireTime, expireTime.status_code);
       } else if (captchaText !== redisCap) {
-  
-        throw new HttpException(
-          Invalid_Captcha,
-          Invalid_Captcha.status_code,
-        );
+        throw new HttpException(Invalid_Captcha, Invalid_Captcha.status_code);
       } else {
         throw new HttpException(
           Request_Was_Successful1,
           Request_Was_Successful1.status_code,
         );
-      } 
+      }
     } catch (error) {
       if (error.status === undefined) {
         const formatError = InternalServerError(error.message);
         throw new HttpException(formatError, formatError.status_code);
       } else throw error;
     }
-
   }
-
-
 }
